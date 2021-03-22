@@ -1,0 +1,26 @@
+sudo: required
+services: 
+  - docker
+
+before_install:
+  - docker build -t jayship2000/react-test -f ./client/Dockerfile.dev ./client 
+
+# All test go here. 
+script:
+  - docker run -e CI=true jayship2000/react-test npm test
+
+# Going to build a docker file for each of these docker files once all test past. 
+after_success:
+  - docker build -t jayship2000/multi-client ./client 
+  - docker build -t jayship2000/mutli-nginx ./nginx
+  - docker build -t jayship2000/mutli-server ./server
+  - docker build -t jayship2000/mutli-worker ./worker
+
+# Log in to the docker CLI, password and ID are in travis environmental variables
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+
+# Take those images and push them to the docker hub 
+  - docker push jayship2000/multi-client
+  - docker push jayship2000/mutli-nginx
+  - docker push jayship2000/mutli-server
+  - docker push jayship2000/mutli-worker

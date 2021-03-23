@@ -24,3 +24,15 @@ after_success:
   - docker push jayship2000/mutli-nginx
   - docker push jayship2000/mutli-server
   - docker push jayship2000/mutli-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: 'us-east-2'
+  app: 'multi-docker'
+  env: 'MultiDocker-env'
+  bucket_name: 'elasticbeanstalk-us-east-2-740666713246'
+  bucket_path: 'docker-multi'
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY
